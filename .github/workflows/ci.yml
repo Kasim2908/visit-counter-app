@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: kasim2908/visit-counter-app
+  IMAGE_NAME: yourdockerhubusername/visit-counter-app
 
 jobs:
   build-and-push:
@@ -21,7 +21,7 @@ jobs:
         if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
-          username: kasim2908
+          username: mohammadkasim
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build Docker image
