@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: yourdockerhubusername/visit-counter-app
+  IMAGE_NAME: mohammadkasim/visit-counter-app
 
 jobs:
   build-and-push:
