@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  IMAGE_NAME: kasim2908/visit-counter-app
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -18,14 +21,14 @@ jobs:
         if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: kasim2908
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/visit-counter-app:v${{ github.run_number }} .
+        run: docker build -t $IMAGE_NAME:v${{ github.run_number }} .
 
       - name: Run Docker container
-        run: docker run -d -p 3000:3000 --name visit-counter-app-container ${{ secrets.DOCKER_USERNAME }}/visit-counter-app:v${{ github.run_number }}
+        run: docker run -d -p 3000:3000 --name visit-counter-app-container $IMAGE_NAME:v${{ github.run_number }}
 
       - name: Test application
         run: |
@@ -34,7 +37,7 @@ jobs:
 
       - name: Push Docker image
         if: github.event_name == 'push'
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/visit-counter-app:v${{ github.run_number }}
+        run: docker push $IMAGE_NAME:v${{ github.run_number }}
 
       - name: Stop and remove container
         if: always()
