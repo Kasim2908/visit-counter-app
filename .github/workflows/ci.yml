@@ -1,0 +1,43 @@
+name: visit-counter-app
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/visit-counter-app:v${{ github.run_number }} .
+
+      - name: Run Docker container
+        run: docker run -d -p 3000:3000 --name visit-counter-app-container ${{ secrets.DOCKERHUB_USERNAME }}/visit-counter-app:v${{ github.run_number }}
+
+      - name: Test application
+        run: |
+          sleep 5
+          curl -f http://localhost:3000/health
+
+      - name: Push Docker image
+        if: github.event_name == 'push'
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/visit-counter-app:v${{ github.run_number }}
+
+      - name: Stop and remove container
+        if: always()
+        run: |
+          docker stop visit-counter-app-container
+          docker rm visit-counter-app-container
